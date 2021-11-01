@@ -1,7 +1,7 @@
 use chrono::prelude::*;
 use chrono::{DateTime, FixedOffset};
-use gil_beats::Beat;
 use clap::{App, Arg};
+use gil_beats::Beat;
 
 fn main() {
     let matches = App::new("gil's beats")

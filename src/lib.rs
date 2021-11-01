@@ -1,6 +1,6 @@
-use chrono::{DateTime, FixedOffset};
 use chrono::Datelike;
-use serde::{Serialize};
+use chrono::{DateTime, FixedOffset};
+use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct Beat {
