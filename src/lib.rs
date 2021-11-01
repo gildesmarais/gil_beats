@@ -45,3 +45,52 @@ impl Beat {
         serde_json::to_string(self).unwrap()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TIME_STRING: &str = "2021-11-01T00:00:00+01:00";
+
+    #[test]
+    fn test_to_string() {
+        let beat = subject();
+        assert_eq!(beat.to_string(), "@42");
+    }
+
+    #[test]
+    fn test_with_datetime() {
+        let time = DateTime::parse_from_rfc3339(&TIME_STRING).unwrap();
+
+        assert_eq!(Beat::with_datetime(time).beats(), 42);
+    }
+
+    #[test]
+    fn test_url() {
+        assert_eq!(
+            subject().url(),
+            "https://www.timeanddate.com/worldclock/fixedtime.html?day=1&month=11&year=2021&beats=42&p1=0"
+        );
+    }
+
+    #[test]
+    fn test_to_json() {
+        assert_eq!(
+            subject().to_json(),
+            format!("{{\"beats\":42,\"datetime\":\"{}\"}}", TIME_STRING)
+        );
+    }
+
+    #[test]
+    fn test_datetime() {
+        let time = DateTime::parse_from_rfc3339(&TIME_STRING).unwrap();
+
+        assert_eq!(Beat::with_datetime(time).datetime(), time);
+    }
+
+    fn subject() -> Beat {
+        let time = DateTime::parse_from_rfc3339(&TIME_STRING).unwrap();
+
+        Beat::with_datetime(time)
+    }
+}

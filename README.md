@@ -19,6 +19,8 @@ Since I have no intention of making it a full-fledged crate, and due to lack of 
   - [x] text (default)
   - [x] swiftbar (with clickable with url)
   - [x] json
-- [ ] add tests
 - [x] add github actions for ci/cd
+- [x] add tests
 - [ ] publish as a crate
+- [ ] provide install option via homebrew
+- [ ] add a (bit|x|swift)bar script example to this README
