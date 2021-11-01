@@ -15,15 +15,10 @@ Since I have no intention of making it a full-fledged crate, and due to lack of 
 - [x] just print the current beat.
 - [x] use the correct time zone
 - [x] useable as lib
-
 - [x] Output --format: 
-- [x] text (default)
-- [x] swiftbar (with clickable with url)
-- [x] json
-
-- [ ] --now (default)
-- [ ] [--parse]
-
+  - [x] text (default)
+  - [x] swiftbar (with clickable with url)
+  - [x] json
 - [ ] add tests
-- [ ] add github actions for ci/cd
+- [x] add github actions for ci/cd
 - [ ] publish as a crate

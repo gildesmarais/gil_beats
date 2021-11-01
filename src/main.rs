@@ -7,7 +7,7 @@ fn main() {
     let matches = App::new("gil's beats")
         .version("0.1.0")
         .author("Gil Desmarais")
-        .about("A Swatch Internet Time tool.")
+        .about("A Swatch Internet Time tool, written in Rust.")
         .arg(
             Arg::with_name("format")
                 .short("f")
