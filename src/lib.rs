@@ -1,6 +1,8 @@
 use chrono::{DateTime, FixedOffset};
 use chrono::Datelike;
+use serde::{Serialize};
 
+#[derive(Serialize)]
 pub struct Beat {
     pub beats: i16,
     pub datetime: DateTime<FixedOffset>,
@@ -37,5 +39,9 @@ impl Beat {
         self.datetime().month(),
         self.datetime().year(),
         self.beats)
+    }
+
+    pub fn to_json(&self) -> String {
+        serde_json::to_string(self).unwrap()
     }
 }

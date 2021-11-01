@@ -16,10 +16,10 @@ Since I have no intention of making it a full-fledged crate, and due to lack of 
 - [x] use the correct time zone
 - [x] useable as lib
 
-- [ ] Output --format: 
+- [x] Output --format: 
 - [x] text (default)
-- [x] swiftbar
-- [ ] json
+- [x] swiftbar (with clickable with url)
+- [x] json
 
 - [ ] --now (default)
 - [ ] [--parse]
@@ -27,7 +27,3 @@ Since I have no intention of making it a full-fledged crate, and due to lack of 
 - [ ] add tests
 - [ ] add github actions for ci/cd
 - [ ] publish as a crate
-
-For swiftbar output
-
-- [x] make clickable with url

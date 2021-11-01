@@ -31,7 +31,7 @@ fn main() {
         println!("{}", beat.datetime().format("%Y-%m-%d %H:%M:%S"));
         println!("Open URL | href={}", beat.url());
     } else if matches.value_of("format").unwrap() == "json" {
-        println!("{{ \"beats\": {} }}", beat.beats);
+        println!("{}", beat.to_json());
     } else {
         println!("{}", beat.to_string());
     }
