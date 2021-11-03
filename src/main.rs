@@ -37,5 +37,9 @@ fn main() {
 fn swiftbar(beat: Beat) {
     println!("{}", beat.to_string());
     println!("---");
-    println!("{} | href={}", beat.datetime().format("%Y-%m-%d %H:%M:%S"), beat.url());
+    println!(
+        "{} | href={}",
+        beat.datetime().format("%Y-%m-%d %H:%M:%S"),
+        beat.url()
+    );
 }
