@@ -33,9 +33,21 @@ impl Beat {
         let string_time = datetime.format("%H:%M:%S").to_string();
         let mut splitted_time = string_time.split(':');
 
-        let hours = splitted_time.next().unwrap().parse::<i32>().expect("invalid hours");
-        let minutes = splitted_time.next().unwrap().parse::<i32>().expect("invalid minutes");
-        let seconds = splitted_time.next().unwrap().parse::<i32>().expect("invalid seconds");
+        let hours = splitted_time
+            .next()
+            .unwrap()
+            .parse::<i32>()
+            .expect("invalid hours");
+        let minutes = splitted_time
+            .next()
+            .unwrap()
+            .parse::<i32>()
+            .expect("invalid minutes");
+        let seconds = splitted_time
+            .next()
+            .unwrap()
+            .parse::<i32>()
+            .expect("invalid seconds");
 
         assert!(splitted_time.next().is_none());
 
@@ -66,29 +78,20 @@ impl Beat {
         format!("@{:03}", self.beats)
     }
 
-    pub fn datetime(&self) -> DateTime<FixedOffset> {
+    pub fn time(&self) -> NaiveTime {
         let duration = Duration::seconds((f64::from(self.beats) * SECONDS_PER_BEAT) as i64);
 
-        let time_string = format!(
-            "{}T{:02}:{:02}:{:02}+01:00",
-            Utc::now().format("%Y-%m-%d").to_string(),
-            duration.num_hours() % 24,
-            duration.num_minutes() % 60,
-            duration.num_seconds() % 60
-        );
-
-        let datetime = DateTime::parse_from_rfc3339(&time_string);
-
-        match datetime {
-            Ok(dt) => dt,
-            Err(err) => panic!("Can't parse time_string {}, error: {:?}", time_string, err),
-        }
+        NaiveTime::from_hms(
+            duration.num_hours() as u32 % 24,
+            duration.num_minutes() as u32 % 60,
+            duration.num_seconds() as u32 % 60,
+        )
     }
 
     pub fn to_json(&self) -> String {
         let obj = BeatJSON {
             beats: self.beats,
-            datetime: self.datetime(),
+            time: self.time(),
         };
 
         serde_json::to_string(&obj).unwrap()
@@ -98,7 +101,7 @@ impl Beat {
 #[derive(Serialize)]
 pub struct BeatJSON {
     pub beats: i16,
-    pub datetime: DateTime<FixedOffset>,
+    pub time: NaiveTime,
 }
 
 pub struct BeatSwiftbarDecorator {
@@ -111,13 +114,13 @@ impl BeatSwiftbarDecorator {
         println!("---");
         println!(
             "{} | href={}",
-            self.beat.datetime().format("%Y-%m-%d %H:%M:%S"),
+            self.beat.time().format("%H:%M:%S"),
             self.url()
         );
     }
 
     fn url(&self) -> String {
-        let datetime = self.beat.datetime();
+        let datetime = Utc::now();
 
         format!("https://www.timeanddate.com/worldclock/fixedtime.html?day={}&month={}&year={}&beats={}&p1=0",
             datetime.day(),
@@ -151,7 +154,7 @@ mod tests {
         let other_beats = Beat::new(beat.beats);
 
         assert!(other_beats.is_ok());
-        assert_eq!(beat.datetime(), other_beats.unwrap().datetime());
+        assert_eq!(beat.time(), other_beats.unwrap().time());
     }
 
     #[test]
@@ -188,7 +191,7 @@ mod tests {
 
     #[test]
     fn test_swiftbar_decorator_url() {
-        let datetime = subject().datetime();
+        let datetime = Utc::now();
 
         let url = format!(
             "https://www.timeanddate.com/worldclock/fixedtime.html?day={}&month={}&year={}&beats=0&p1=0",
@@ -202,16 +205,19 @@ mod tests {
     fn test_to_json() {
         assert_eq!(
             subject().to_json(),
-            format!("{{\"beats\":0,\"datetime\":\"{}\"}}", time_string())
+            format!("{{\"beats\":0,\"time\":\"{}\"}}", "00:00:00")
         );
     }
 
     #[test]
     fn test_with_datetime() {
-        let time = DateTime::parse_from_rfc3339(&time_string()).unwrap();
+        let datetime = DateTime::parse_from_rfc3339(&time_string()).unwrap();
 
-        assert!(Beat::with_datetime(time).is_ok());
-        assert_eq!(Beat::with_datetime(time).unwrap().datetime(), time);
+        assert!(Beat::with_datetime(datetime).is_ok());
+        assert_eq!(
+            Beat::with_datetime(datetime).unwrap().time(),
+            datetime.time()
+        );
     }
 
     #[test]
