@@ -15,6 +15,7 @@ impl Beat {
 
         let hours = splitted_time.next().unwrap().parse::<i32>().unwrap();
         let minutes = splitted_time.next().unwrap().parse::<i32>().unwrap();
+        assert!(splitted_time.next().is_none());
 
         let beats = (f64::from((minutes + 1) * 60 + (hours + 1) * 3600) / 86.4).floor() as i16;
 

@@ -42,6 +42,8 @@ and `chmod +x gil_beats.87s.sh`.
   - [x] json
 - [x] add github actions for ci/cd
 - [x] add tests
+- [ ] refactor: datetime should solely be needed to create a beat; beats calc. algorithm needs to go in it
+- [ ] cli: handle unsupported format better
 - [ ] publish as a crate
 - [ ] provide install option via homebrew
 - [x] add a (bit|x|swift)bar script example to this README
