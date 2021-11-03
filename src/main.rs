@@ -1,7 +1,6 @@
-use chrono::prelude::*;
-use chrono::{DateTime, FixedOffset};
 use clap::{App, Arg};
 use gil_beats::Beat;
+use gil_beats::BeatSwiftbarDecorator;
 
 fn main() {
     let matches = App::new("gil's beats")
@@ -19,23 +18,13 @@ fn main() {
         )
         .get_matches();
 
-    let time: DateTime<Utc> = Utc::now();
-
-    let timezone = FixedOffset::east(0);
-    let in_timezone = time.with_timezone(&timezone);
-    let beat = Beat::with_datetime(in_timezone);
+    let beat = Beat::now();
 
     if matches.value_of("format").unwrap() == "swiftbar" {
-        swiftbar(beat)
+        BeatSwiftbarDecorator { beat }.print();
     } else if matches.value_of("format").unwrap() == "json" {
         println!("{}", beat.to_json());
     } else {
         println!("{}", beat.to_string());
     }
-}
-
-fn swiftbar(beat: Beat) {
-    println!("{}", beat.to_string());
-    println!("---");
-    println!("{} | href={}", beat.datetime().format("%Y-%m-%d %H:%M:%S"), beat.url());
 }
