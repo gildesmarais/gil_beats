@@ -4,17 +4,17 @@ use serde::Serialize;
 
 #[derive(Debug)]
 pub struct Beat {
-    pub beats: i16,
+    pub beats: u16,
 }
 
 const SECONDS_PER_BEAT: f64 = 86.4; // seconds of day (usually 86400) / 1000
 
 impl Beat {
-    pub fn new(beats: i16) -> Result<Beat, &'static str> {
-        if beats >= 0 && beats < 1000 {
+    pub fn new(beats: u16) -> Result<Beat, &'static str> {
+        if beats < 1000 {
             Ok(Beat { beats })
         } else {
-            Err("beats must be between 0 and 999")
+            Err("beats must be less than 999")
         }
     }
 
@@ -59,22 +59,22 @@ impl Beat {
     }
 
     pub fn with_hms(hours: i32, minutes: i32, seconds: i32) -> Result<Beat, &'static str> {
-        if hours >= 24 {
-            return Err("hours >= 24!");
+        if hours >= 24 || hours < 0 {
+            return Err("hours >= 24 or < 0!");
         }
-        if minutes >= 60 {
-            return Err("minutes >= 60!");
+        if minutes >= 60 || minutes < 0 {
+            return Err("minutes >= 60 or < 0!");
         }
-        if seconds >= 60 {
-            return Err("seconds >= 60");
+        if seconds >= 60 || minutes < 0 {
+            return Err("seconds >= 60 or < 0");
         }
 
         let seconds_of_day: i32 = seconds + minutes * 60 + hours * 3600;
 
-        Beat::new((f64::from(seconds_of_day) / SECONDS_PER_BEAT).floor() as i16)
+        Beat::new((f64::from(seconds_of_day) / SECONDS_PER_BEAT).floor() as u16)
     }
 
-    pub fn beats(&self) -> i16 {
+    pub fn beats(&self) -> u16 {
         self.beats
     }
 
@@ -104,7 +104,7 @@ impl Beat {
 
 #[derive(Serialize)]
 pub struct BeatJSON {
-    pub beats: i16,
+    pub beats: u16,
     pub time: NaiveTime,
 }
 
