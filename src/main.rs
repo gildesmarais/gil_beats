@@ -1,5 +1,3 @@
-use chrono::prelude::*;
-use chrono::{DateTime, FixedOffset};
 use clap::{App, Arg};
 use gil_beats::Beat;
 
@@ -19,10 +17,7 @@ fn main() {
         )
         .get_matches();
 
-    let time: DateTime<Utc> = Utc::now();
-    let timezone = FixedOffset::east(3600);
-    let in_timezone = time.with_timezone(&timezone);
-    let beat = Beat::with_datetime(in_timezone);
+    let beat = Beat::now();
 
     if matches.value_of("format").unwrap() == "swiftbar" {
         swiftbar(beat)

@@ -2,6 +2,7 @@ use chrono::prelude::*;
 use chrono::{DateTime, Datelike, Duration, FixedOffset};
 use serde::Serialize;
 
+#[derive(Debug)]
 pub struct Beat {
     pub beats: i16,
 }
@@ -15,8 +16,20 @@ struct BeatSerialized {
 const SECONDS_PER_BEAT: f64 = 86.4; // seconds of day (usually 86400) / 1000
 
 impl Beat {
+    pub fn new(beats: i16) -> Beat {
+        Beat { beats }
+    }
+
+    pub fn now() -> Beat {
+        let time: DateTime<Utc> = Utc::now();
+        let timezone = FixedOffset::east(3600);
+        let in_timezone = time.with_timezone(&timezone);
+
+        Beat::with_datetime(in_timezone)
+    }
+
     pub fn with_datetime(datetime: DateTime<FixedOffset>) -> Beat {
-        // TODO: check that fixed offset is UTC+01. if not, fix it.
+        // TODO: check that fixed offset is UTC+01. if not, fix/err it.
         // return type Result<Beat, &str>
 
         let string_time = datetime.format("%H:%M:%S").to_string();
@@ -30,11 +43,6 @@ impl Beat {
 
         let beats = Beat::with_hms(hours, minutes, seconds);
 
-        Beat { beats }
-    }
-
-    pub fn new(beats: i16) -> Beat {
-        // TODO: make beats optional param. if absent, use current time.
         Beat { beats }
     }
 
@@ -75,7 +83,7 @@ impl Beat {
 
         match datetime {
             Ok(dt) => dt,
-            Err(err) => panic!("Can't parse {}, {:?}", time_string, err),
+            Err(err) => panic!("Can't parse time_string {}, error: {:?}", time_string, err),
         }
     }
 
@@ -113,6 +121,13 @@ mod tests {
 
     fn subject() -> Beat {
         Beat::new(0)
+    }
+
+    #[test]
+    fn test_now() {
+        let beat = Beat::now();
+
+        assert_eq!(beat.datetime(), Beat::new(beat.beats).datetime());
     }
 
     #[test]
