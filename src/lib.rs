@@ -49,7 +49,7 @@ impl Beat {
     }
 
     pub fn to_string(&self) -> String {
-        format!("@{}", self.beats)
+        format!("@{:03}", self.beats)
     }
 
     pub fn datetime(&self) -> DateTime<FixedOffset> {
@@ -93,7 +93,7 @@ mod tests {
     #[test]
     fn test_to_string() {
         let beat = subject();
-        assert_eq!(beat.to_string(), "@0");
+        assert_eq!(beat.to_string(), "@000");
     }
 
     #[test]
