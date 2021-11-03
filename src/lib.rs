@@ -134,7 +134,7 @@ impl BeatSwiftbarDecorator {
 mod tests {
     use super::*;
 
-    fn time_string() -> String {
+    fn date_time_string() -> String {
         format!(
             "{}T{:02}:{:02}:{:02}+01:00",
             Utc::now().format("%Y-%m-%d").to_string(),
@@ -211,7 +211,7 @@ mod tests {
 
     #[test]
     fn test_with_datetime() {
-        let datetime = DateTime::parse_from_rfc3339(&time_string()).unwrap();
+        let datetime = DateTime::parse_from_rfc3339(&date_time_string()).unwrap();
 
         assert!(Beat::with_datetime(datetime).is_ok());
         assert_eq!(
@@ -222,7 +222,7 @@ mod tests {
 
     #[test]
     fn test_with_datetime_beats() {
-        let time = DateTime::parse_from_rfc3339(&time_string()).unwrap();
+        let time = DateTime::parse_from_rfc3339(&date_time_string()).unwrap();
 
         assert!(Beat::with_datetime(time).is_ok());
         assert_eq!(Beat::with_datetime(time).unwrap().beats(), 0);
