@@ -10,8 +10,12 @@ pub struct Beat {
 const SECONDS_PER_BEAT: f64 = 86.4; // seconds of day (usually 86400) / 1000
 
 impl Beat {
-    pub fn new(beats: i16) -> Beat {
-        Beat { beats }
+    pub fn new(beats: i16) -> Result<Beat, &'static str> {
+        if beats >= 0 && beats < 1000 {
+            Ok(Beat { beats })
+        } else {
+            Err("beats must be between 0 and 999")
+        }
     }
 
     pub fn now() -> Beat {
@@ -19,25 +23,25 @@ impl Beat {
         let timezone = FixedOffset::east(3600);
         let in_timezone = time.with_timezone(&timezone);
 
-        Beat::with_datetime(in_timezone)
+        Beat::with_datetime(in_timezone).unwrap()
     }
 
-    pub fn with_datetime(datetime: DateTime<FixedOffset>) -> Beat {
+    pub fn with_datetime(datetime: DateTime<FixedOffset>) -> Result<Beat, String> {
         // TODO: check that fixed offset is UTC+01. if not, fix/err it.
         // return type Result<Beat, &str>
 
         let string_time = datetime.format("%H:%M:%S").to_string();
         let mut splitted_time = string_time.split(':');
 
-        let hours = splitted_time.next().unwrap().parse::<i32>().unwrap();
-        let minutes = splitted_time.next().unwrap().parse::<i32>().unwrap();
-        let seconds = splitted_time.next().unwrap().parse::<i32>().unwrap();
+        let hours = splitted_time.next().unwrap().parse::<i32>().expect("invalid hours");
+        let minutes = splitted_time.next().unwrap().parse::<i32>().expect("invalid minutes");
+        let seconds = splitted_time.next().unwrap().parse::<i32>().expect("invalid seconds");
 
         assert!(splitted_time.next().is_none());
 
         let beats = Beat::with_hms(hours, minutes, seconds);
 
-        Beat { beats }
+        Ok(Beat { beats })
     }
 
     fn with_hms(hours: i32, minutes: i32, seconds: i32) -> i16 {
@@ -138,14 +142,16 @@ mod tests {
     }
 
     fn subject() -> Beat {
-        Beat::new(0)
+        Beat::new(0).unwrap()
     }
 
     #[test]
     fn test_now() {
         let beat = Beat::now();
+        let other_beats = Beat::new(beat.beats);
 
-        assert_eq!(beat.datetime(), Beat::new(beat.beats).datetime());
+        assert!(other_beats.is_ok());
+        assert_eq!(beat.datetime(), other_beats.unwrap().datetime());
     }
 
     #[test]
@@ -204,13 +210,15 @@ mod tests {
     fn test_with_datetime() {
         let time = DateTime::parse_from_rfc3339(&time_string()).unwrap();
 
-        assert_eq!(Beat::with_datetime(time).datetime(), time);
+        assert!(Beat::with_datetime(time).is_ok());
+        assert_eq!(Beat::with_datetime(time).unwrap().datetime(), time);
     }
 
     #[test]
     fn test_with_datetime_beats() {
         let time = DateTime::parse_from_rfc3339(&time_string()).unwrap();
 
-        assert_eq!(Beat::with_datetime(time).beats(), 0);
+        assert!(Beat::with_datetime(time).is_ok());
+        assert_eq!(Beat::with_datetime(time).unwrap().beats(), 0);
     }
 }
