@@ -1,16 +1,10 @@
 use chrono::prelude::*;
-use chrono::{DateTime, Datelike, Duration, FixedOffset};
+use chrono::{DateTime, Duration, FixedOffset};
 use serde::Serialize;
 
 #[derive(Debug)]
 pub struct Beat {
     pub beats: i16,
-}
-
-#[derive(Serialize)]
-struct BeatSerialized {
-    pub beats: i16,
-    pub datetime: DateTime<FixedOffset>,
 }
 
 const SECONDS_PER_BEAT: f64 = 86.4; // seconds of day (usually 86400) / 1000
@@ -87,21 +81,45 @@ impl Beat {
         }
     }
 
-    pub fn url(&self) -> String {
-        format!("https://www.timeanddate.com/worldclock/fixedtime.html?day={}&month={}&year={}&beats={}&p1=0",
-        self.datetime().day(),
-        self.datetime().month(),
-        self.datetime().year(),
-        self.beats)
-    }
-
     pub fn to_json(&self) -> String {
-        let obj = BeatSerialized {
+        let obj = BeatJSON {
             beats: self.beats,
             datetime: self.datetime(),
         };
 
         serde_json::to_string(&obj).unwrap()
+    }
+}
+
+#[derive(Serialize)]
+pub struct BeatJSON {
+    pub beats: i16,
+    pub datetime: DateTime<FixedOffset>,
+}
+
+pub struct BeatSwiftbarDecorator {
+    pub beat: Beat,
+}
+
+impl BeatSwiftbarDecorator {
+    pub fn print(&self) {
+        println!("{}", self.beat.to_string());
+        println!("---");
+        println!(
+            "{} | href={}",
+            self.beat.datetime().format("%Y-%m-%d %H:%M:%S"),
+            self.url()
+        );
+    }
+
+    fn url(&self) -> String {
+        let datetime = self.beat.datetime();
+
+        format!("https://www.timeanddate.com/worldclock/fixedtime.html?day={}&month={}&year={}&beats={}&p1=0",
+            datetime.day(),
+            datetime.month(),
+            datetime.year(),
+            self.beat.beats)
     }
 }
 
@@ -163,7 +181,7 @@ mod tests {
     }
 
     #[test]
-    fn test_url() {
+    fn test_swiftbar_decorator_url() {
         let datetime = subject().datetime();
 
         let url = format!(
@@ -171,7 +189,7 @@ mod tests {
             datetime.day(),
             datetime.month(),
             datetime.year());
-        assert_eq!(subject().url(), url);
+        assert_eq!(BeatSwiftbarDecorator { beat: subject() }.url(), url);
     }
 
     #[test]

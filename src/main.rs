@@ -1,5 +1,6 @@
 use clap::{App, Arg};
 use gil_beats::Beat;
+use gil_beats::BeatSwiftbarDecorator;
 
 fn main() {
     let matches = App::new("gil's beats")
@@ -20,20 +21,10 @@ fn main() {
     let beat = Beat::now();
 
     if matches.value_of("format").unwrap() == "swiftbar" {
-        swiftbar(beat)
+        BeatSwiftbarDecorator { beat }.print();
     } else if matches.value_of("format").unwrap() == "json" {
         println!("{}", beat.to_json());
     } else {
         println!("{}", beat.to_string());
     }
-}
-
-fn swiftbar(beat: Beat) {
-    println!("{}", beat.to_string());
-    println!("---");
-    println!(
-        "{} | href={}",
-        beat.datetime().format("%Y-%m-%d %H:%M:%S"),
-        beat.url()
-    );
 }
