@@ -55,15 +55,23 @@ impl Beat {
 
         assert!(splitted_time.next().is_none());
 
-        let beats = Beat::with_hms(hours, minutes, seconds);
-
-        Ok(Beat { beats })
+        Beat::with_hms(hours, minutes, seconds)
     }
 
-    fn with_hms(hours: i32, minutes: i32, seconds: i32) -> i16 {
+    pub fn with_hms(hours: i32, minutes: i32, seconds: i32) -> Result<Beat, &'static str> {
+        if hours >= 24 {
+            return Err("hours >= 24!");
+        }
+        if minutes >= 60 {
+            return Err("minutes >= 60!");
+        }
+        if seconds >= 60 {
+            return Err("seconds >= 60");
+        }
+
         let seconds_of_day: i32 = seconds + minutes * 60 + hours * 3600;
 
-        (f64::from(seconds_of_day) / SECONDS_PER_BEAT).floor() as i16
+        Beat::new((f64::from(seconds_of_day) / SECONDS_PER_BEAT).floor() as i16)
     }
 
     pub fn beats(&self) -> i16 {
@@ -155,18 +163,16 @@ mod tests {
 
     #[test]
     fn test_with_hours_and_minutes() {
-        assert_eq!(Beat::with_hms(0, 0, 0), 0);
-        assert_eq!(Beat::with_hms(0, 2, 0), 1);
+        assert_eq!(Beat::with_hms(0, 0, 0).unwrap().beats(), 0);
+        assert_eq!(Beat::with_hms(0, 2, 0).unwrap().beats(), 1);
+        assert_eq!(Beat::with_hms(6, 0, 1).unwrap().beats(), 250);
+        assert_eq!(Beat::with_hms(12, 0, 1).unwrap().beats(), 500);
+        assert_eq!(Beat::with_hms(18, 0, 1).unwrap().beats(), 750);
+        assert_eq!(Beat::with_hms(23, 59, 59).unwrap().beats(), 999);
 
-        assert_eq!(Beat::with_hms(6, 0, 1), 250);
-        assert_eq!(Beat::with_hms(12, 0, 1), 500);
-        assert_eq!(Beat::with_hms(18, 0, 1), 750);
-
-        assert_eq!(Beat::with_hms(24, 0, 0), 999);
-
-        // TODO: handle these 'false' values appropiately
-        assert_eq!(Beat::with_hms(0, 0, 87), 1);
-        assert_eq!(Beat::with_hms(24, 0, 1), 1000);
+        assert!(Beat::with_hms(0, 0, 87).is_err());
+        assert!(Beat::with_hms(0, 61, 0).is_err());
+        assert!(Beat::with_hms(24, 0, 1).is_err());
     }
 
     #[test]
