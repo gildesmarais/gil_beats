@@ -26,13 +26,16 @@ fn main() {
     let beat = Beat::with_datetime(in_timezone);
 
     if matches.value_of("format").unwrap() == "swiftbar" {
-        println!("{}", beat.to_string());
-        println!("---");
-        println!("{}", beat.datetime().format("%Y-%m-%d %H:%M:%S"));
-        println!("Open URL | href={}", beat.url());
+        swiftbar(beat)
     } else if matches.value_of("format").unwrap() == "json" {
         println!("{}", beat.to_json());
     } else {
         println!("{}", beat.to_string());
     }
+}
+
+fn swiftbar(beat: Beat) {
+    println!("{}", beat.to_string());
+    println!("---");
+    println!("{} | href={}", beat.datetime().format("%Y-%m-%d %H:%M:%S"), beat.url());
 }
