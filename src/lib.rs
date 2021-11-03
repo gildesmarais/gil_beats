@@ -26,9 +26,13 @@ impl Beat {
         Beat::with_datetime(in_timezone).unwrap()
     }
 
-    pub fn with_datetime(datetime: DateTime<FixedOffset>) -> Result<Beat, String> {
-        // TODO: check that fixed offset is UTC+01. if not, fix/err it.
-        // return type Result<Beat, &str>
+    pub fn with_datetime(datetime: DateTime<FixedOffset>) -> Result<Beat, &'static str> {
+        let timezone = FixedOffset::east(3600);
+        let mut datetime = datetime.clone();
+
+        if datetime.timezone() != timezone {
+            datetime = datetime.with_timezone(&timezone);
+        }
 
         let string_time = datetime.format("%H:%M:%S").to_string();
         let mut splitted_time = string_time.split(':');
@@ -60,14 +64,6 @@ impl Beat {
         let seconds_of_day: i32 = seconds + minutes * 60 + hours * 3600;
 
         (f64::from(seconds_of_day) / SECONDS_PER_BEAT).floor() as i16
-    }
-
-    pub fn beginning_of_day() -> i16 {
-        Beat::with_hms(0, 0, 0)
-    }
-
-    pub fn end_of_day() -> i16 {
-        Beat::with_hms(23, 59, 59)
     }
 
     pub fn beats(&self) -> i16 {
@@ -174,16 +170,6 @@ mod tests {
     }
 
     #[test]
-    fn test_beginning_of_day() {
-        assert_eq!(Beat::beginning_of_day(), 0);
-    }
-
-    #[test]
-    fn test_end_of_day() {
-        assert_eq!(Beat::end_of_day(), 999);
-    }
-
-    #[test]
     fn test_to_string() {
         let beat = subject();
         assert_eq!(beat.to_string(), "@000");
@@ -218,6 +204,10 @@ mod tests {
             Beat::with_datetime(datetime).unwrap().time(),
             datetime.time()
         );
+
+        let dt_incorrect_tz = DateTime::parse_from_rfc3339("2021-11-03T11:00:01+00:00").unwrap();
+        assert!(Beat::with_datetime(dt_incorrect_tz).is_ok());
+        assert_eq!(Beat::with_datetime(dt_incorrect_tz).unwrap().beats(), 500);
     }
 
     #[test]
