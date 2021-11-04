@@ -16,13 +16,30 @@ fn main() {
                 .takes_value(true)
                 .default_value("text"),
         )
+        .arg(
+            Arg::with_name("beats")
+                .short("b")
+                .long("beats")
+                .value_name("BEATS")
+                .help(
+                    "The beats to display (defaults to now; use with non-text format recommended)",
+                )
+                .takes_value(true),
+        )
         .get_matches();
 
-    let beat = Beat::now();
+    let time = matches.value_of("beats").unwrap_or("now");
+    let format = matches.value_of("format").unwrap_or("text");
 
-    if matches.value_of("format").unwrap() == "swiftbar" {
+    let beat = if time == "now" {
+        Beat::now()
+    } else {
+        Beat::new(time.parse::<u16>().unwrap()).unwrap()
+    };
+
+    if format == "swiftbar" {
         BeatSwiftbarDecorator { beat }.print();
-    } else if matches.value_of("format").unwrap() == "json" {
+    } else if format == "json" {
         println!("{}", beat.to_json());
     } else {
         println!("{}", beat.to_string());
