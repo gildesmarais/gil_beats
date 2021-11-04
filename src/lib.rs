@@ -14,7 +14,7 @@ impl Beat {
         if beats < 1000 {
             Ok(Beat { beats })
         } else {
-            Err("beats must be less than 999")
+            Err("beats must be less than 1000")
         }
     }
 
