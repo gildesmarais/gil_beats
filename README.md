@@ -10,7 +10,7 @@ It can also be used as a library that can be used in other Rust programs.
 
 One day after we were given an hour as a (to-be-returned) gift (change from summer time to winter time, daylight saving time (DST)), there was a small discussion on Twitter about when the European Union would finally implement its plans to abolish daylight saving time.
 
-Someone mentioned Swatch Internet Time, a time-zone-less time format from 1998. The idea - that of computer scientist [Nicholas Negroponte](https://en.wikipedia.org/wiki/Nicholas_Negroponte) - was unsuccessful.
+Someone mentioned Swatch Internet Time, a time-zone-less time format from 1998. The idea was unsuccessful.
 
 Unimpressed by all this, I thought a program that will help me deal with the Internet Time could be a nice little project to invest the hour well and learn some Rust. Here it is.
 
