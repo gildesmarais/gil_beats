@@ -34,14 +34,18 @@ fn main() {
     let beat = if time == "now" {
         Beat::now()
     } else {
-        Beat::new(time.parse::<u16>().unwrap()).unwrap()
+        Beat::new(time.parse::<u16>().unwrap())
     };
 
-    if format == "swiftbar" {
-        BeatSwiftbarDecorator { beat }.print();
-    } else if format == "json" {
-        println!("{}", beat.to_json());
-    } else {
-        println!("{}", beat.to_string());
+    match beat {
+        Ok(beat) => match format {
+            "text" => println!("{}", beat.to_string()),
+            "json" => println!("{}", beat.to_json()),
+            "swiftbar" => {
+                BeatSwiftbarDecorator { beat }.print();
+            }
+            _ => println!("Unsupported format"),
+        },
+        Err(e) => println!("{}", e),
     }
 }
