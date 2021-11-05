@@ -18,15 +18,15 @@ impl Beat {
         }
     }
 
-    pub fn now() -> Beat {
+    pub fn now() -> Result<Beat, &'static str> {
         let time: DateTime<Utc> = Utc::now();
         let timezone = FixedOffset::east(3600);
         let in_timezone = time.with_timezone(&timezone);
 
-        Beat::with_datetime(in_timezone).unwrap()
+        Beat::from_datetime(in_timezone)
     }
 
-    pub fn with_datetime(datetime: DateTime<FixedOffset>) -> Result<Beat, &'static str> {
+    pub fn from_datetime(datetime: DateTime<FixedOffset>) -> Result<Beat, &'static str> {
         let timezone = FixedOffset::east(3600);
         let mut datetime = datetime.clone();
 
@@ -55,10 +55,10 @@ impl Beat {
 
         assert!(splitted_time.next().is_none());
 
-        Beat::with_hms(hours, minutes, seconds)
+        Beat::from_hms(hours, minutes, seconds)
     }
 
-    pub fn with_hms(hours: i32, minutes: i32, seconds: i32) -> Result<Beat, &'static str> {
+    pub fn from_hms(hours: i32, minutes: i32, seconds: i32) -> Result<Beat, &'static str> {
         if hours >= 24 || hours < 0 {
             return Err("hours >= 24 or < 0!");
         }
@@ -154,7 +154,7 @@ mod tests {
 
     #[test]
     fn test_now() {
-        let beat = Beat::now();
+        let beat = Beat::now().expect("Beat::now() errored");
         let other_beats = Beat::new(beat.beats);
 
         assert!(other_beats.is_ok());
@@ -163,16 +163,16 @@ mod tests {
 
     #[test]
     fn test_with_hours_and_minutes() {
-        assert_eq!(Beat::with_hms(0, 0, 0).unwrap().beats(), 0);
-        assert_eq!(Beat::with_hms(0, 2, 0).unwrap().beats(), 1);
-        assert_eq!(Beat::with_hms(6, 0, 1).unwrap().beats(), 250);
-        assert_eq!(Beat::with_hms(12, 0, 1).unwrap().beats(), 500);
-        assert_eq!(Beat::with_hms(18, 0, 1).unwrap().beats(), 750);
-        assert_eq!(Beat::with_hms(23, 59, 59).unwrap().beats(), 999);
+        assert_eq!(Beat::from_hms(0, 0, 0).unwrap().beats(), 0);
+        assert_eq!(Beat::from_hms(0, 2, 0).unwrap().beats(), 1);
+        assert_eq!(Beat::from_hms(6, 0, 1).unwrap().beats(), 250);
+        assert_eq!(Beat::from_hms(12, 0, 1).unwrap().beats(), 500);
+        assert_eq!(Beat::from_hms(18, 0, 1).unwrap().beats(), 750);
+        assert_eq!(Beat::from_hms(23, 59, 59).unwrap().beats(), 999);
 
-        assert!(Beat::with_hms(0, 0, 87).is_err());
-        assert!(Beat::with_hms(0, 61, 0).is_err());
-        assert!(Beat::with_hms(24, 0, 1).is_err());
+        assert!(Beat::from_hms(0, 0, 87).is_err());
+        assert!(Beat::from_hms(0, 61, 0).is_err());
+        assert!(Beat::from_hms(24, 0, 1).is_err());
     }
 
     #[test]
@@ -202,25 +202,25 @@ mod tests {
     }
 
     #[test]
-    fn test_with_datetime() {
+    fn test_from_datetime() {
         let datetime = DateTime::parse_from_rfc3339(&date_time_string()).unwrap();
 
-        assert!(Beat::with_datetime(datetime).is_ok());
+        assert!(Beat::from_datetime(datetime).is_ok());
         assert_eq!(
-            Beat::with_datetime(datetime).unwrap().time(),
+            Beat::from_datetime(datetime).unwrap().time(),
             datetime.time()
         );
 
         let dt_incorrect_tz = DateTime::parse_from_rfc3339("2021-11-03T11:00:01+00:00").unwrap();
-        assert!(Beat::with_datetime(dt_incorrect_tz).is_ok());
-        assert_eq!(Beat::with_datetime(dt_incorrect_tz).unwrap().beats(), 500);
+        assert!(Beat::from_datetime(dt_incorrect_tz).is_ok());
+        assert_eq!(Beat::from_datetime(dt_incorrect_tz).unwrap().beats(), 500);
     }
 
     #[test]
-    fn test_with_datetime_beats() {
+    fn test_from_datetime_beats() {
         let time = DateTime::parse_from_rfc3339(&date_time_string()).unwrap();
 
-        assert!(Beat::with_datetime(time).is_ok());
-        assert_eq!(Beat::with_datetime(time).unwrap().beats(), 0);
+        assert!(Beat::from_datetime(time).is_ok());
+        assert_eq!(Beat::from_datetime(time).unwrap().beats(), 0);
     }
 }
