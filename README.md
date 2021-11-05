@@ -1,7 +1,7 @@
 # gil_beats
 
 This command-line program deals with the [Swatch Internet Time](https://en.wikipedia.org/wiki/Swatch_Internet_Time).
-It calculates the beats for the current time, for a given datetime and supports beats to time (H:m:s).
+It calculates the beats for the current time, for a given datetime and supports beats to time (`H:m:s`).
 It outputs in several formats, e.g. Bitbar (Xbar/Swiftbar) and JSON - or raw text.
 
 It can also be used as a library that can be used in other Rust programs.
