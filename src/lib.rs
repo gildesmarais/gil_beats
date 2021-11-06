@@ -65,7 +65,7 @@ impl Beat {
         if minutes >= 60 || minutes < 0 {
             return Err("minutes >= 60 or < 0!");
         }
-        if seconds >= 60 || minutes < 0 {
+        if seconds >= 60 || seconds < 0 {
             return Err("seconds >= 60 or < 0");
         }
 
