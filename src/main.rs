@@ -39,7 +39,13 @@ fn main() {
 
     match beat {
         Ok(beat) => match format {
-            "text" => println!("{}", beat.to_string()),
+            "text" => {
+                if time == "now" {
+                    println!("{}", beat.to_string())
+                } else {
+                    println!("{}", beat.time().format("%H:%M:%S"))
+                };
+            }
             "json" => println!("{}", beat.to_json()),
             "swiftbar" => {
                 BeatSwiftbarDecorator { beat }.print();
